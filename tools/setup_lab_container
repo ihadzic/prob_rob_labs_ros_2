@@ -49,6 +49,8 @@ function setup_ros_repo() {
 function setup_clearpath_repo() {
     wget https://packages.clearpathrobotics.com/public.key -O - | sudo apt-key add -
     sudo sh -c 'echo "deb https://packages.clearpathrobotics.com/stable/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/clearpath-latest.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
     apt update
 }
 
@@ -99,6 +101,8 @@ function install_ros_packages() {
         "turtlebot3"
         "turtlebot3-simulations"
         "dynamixel-sdk"
+        "clearpath-desktop"
+        "clearpath-simulator"
     )
     for package in "${packages[@]}"; do
         apt-mark showhold  | grep  "ros-$ROS_RELEASE-$package" > /dev/null
@@ -126,6 +130,7 @@ function install_packages() {
         "git"
         "gitk"
         "gcc"
+        "python3-vcstool"
     )
     apt install -y ${packages[*]}
     s=$?
