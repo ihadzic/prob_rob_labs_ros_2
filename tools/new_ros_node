@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ -z "$MY_WORKSPACE" ]; then
+    echo 'MY_WORKSPACE variable not defined'
+    exit 1
+fi
+colcon_dir=$MY_WORKSPACE
+
+if [ -z "$1" ]; then
+    echo "must specify the node name"
+    exit 1
+fi
+node_name=$1
+
+class_name=$(echo "$node_name" | sed -E 's/(^|_)([a-z])/\U\2/g')
+target_dir="$colcon_dir/src/prob_rob_labs_ros_2/prob_rob_labs"
+if [ -d "$target_dir/src/$node_name" ]; then
+    echo "node $node_name already exists"
+    exit 1
+fi
+echo "creating node $node_name in $target_dir"
+
+src_dir=$target_dir/src/$node_name
+echo "create source directory $src_dir"
+mkdir -p $src_dir
+
+echo "create __init__.py source file"
+NEW_FILE=$src_dir/__init__.py
+if [ $dry_run -eq 0 ]; then
+    echo "# Python __init__.py, makes this directory a module do not remove." > $NEW_FILE
+    echo "# See https://docs.python.org/3/tutorial/modules.html for details" >> $NEW_FILE
+fi
+echo "generate $node_name.py"
+cp template/template.py $src_dir/$node_name.py
+sed -i "s/NODE/$node_name/g" $src_dir/$node_name.py
+sed -i "s/CLASS/$class_name/g" $src_dir/$node_name.py
+
+launch_dir=$target_dir/launch
+launch_name="$node_name"_launch.py
+echo "generate $launch_name"
+cp template/template_launch.py $launch_dir/$launch_name
+sed -i "s/NODE/$node_name/g" $launch_dir/$launch_name
+echo "add node to $target/setup.py"
+if [ $dry_run -eq 0 ]; then
+    sed -i "/console_scripts/a \            '$node_name = $node_name.$node_name:main'," $target_dir/setup.py
+fi
+echo "whew!"
