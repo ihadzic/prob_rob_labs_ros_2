@@ -30,5 +30,8 @@ setup(
     description='Prob Rob Labs',
     license='MIT',
     tests_require=['pytest'],
-    # add entry points here
+    entry_points={
+        'console_scripts': [
+        ],
+    }
 )
