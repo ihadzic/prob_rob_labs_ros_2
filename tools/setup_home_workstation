@@ -1,10 +1,10 @@
 #!/bin/bash
 
-STATE_DIR=/var/lib/ros2_distrobox_install
+STATE_DIR=/var/lib/ros2_jazzy_workstation_install
 STATE_FILE=state
 script_name=$(basename $0)
-ROS_RELEASE=humble
-UBUNTU_RELEASE=jammy
+ROS_RELEASE=jazzy
+UBUNTU_RELEASE=noble
 
 function usage() {
     echo "usage: $script_name [-h|?] [-u]"
@@ -49,7 +49,7 @@ function setup_ros_repo() {
 }
 
 function install_ros() {
-    apt install -y ros-humble-desktop-full
+    apt install -y ros-$ROS_RELEASE-desktop-full
     apt install -y ros-dev-tools
     rosdep init
 }
@@ -58,11 +58,12 @@ function update_system() {
     echo "Running system update"
     apt update
     if [ $? -ne 0 ]; then
+        echo "System package list update failed"
         return 1
     fi
     apt full-upgrade -y
     if [ $? -ne 0 ]; then
-        bitch_about_proxy
+        echo "System package upgrade failed"
         return 1
     fi
     echo "System updated"
@@ -78,9 +79,11 @@ function install_ros_packages() {
         "rmw-cyclonedds-cpp"
         "rmw-fastrtps-cpp"
         "control-toolbox"
+        "gz-sim-vendor"
+        "gz-plugin-vendor"
         "ros-gz"
-        "gazebo-ros-pkgs"
-        "ros-ign-bridge"
+        "ros-gz-sim"
+        "ros-gz-bridge"
         "teleop-twist-keyboard"
         "nav2-bringup"
         "velodyne"
@@ -91,7 +94,6 @@ function install_ros_packages() {
         "twist-mux"
         "ros2-control"
         "ros2-controllers"
-        "gazebo-ros2-control"
         "turtlebot3"
         "turtlebot3-simulations"
         "dynamixel-sdk"
@@ -99,6 +101,8 @@ function install_ros_packages() {
         "rqt-tf-tree"
         "cv-bridge"
         "image-view"
+        "gz-ros2-control"
+        "twist-stamper"
     )
     for package in "${packages[@]}"; do
         apt-mark showhold  | grep  "ros-$ROS_RELEASE-$package" > /dev/null
@@ -118,8 +122,6 @@ function install_packages() {
     local packages
     echo "Installing additional packages"
     packages=(
-        "gazebo"
-        "ignition"
         "vim"
         "emacs"
         "git"
@@ -133,7 +135,8 @@ function install_packages() {
 
 function generate_cyclone_config() {
     echo "Generating CycloneDDS config"
-    cat >> /home/$SUDO_USER/cyclone_config.xml <<'EOF'
+    mkdir -p /home/$SUDO_USER/config
+    cat >> /home/$SUDO_USER/config/cyclone_config.xml <<'EOF'
 <CycloneDDS>
   <Discovery>
     <ParticipantIndex>auto</ParticipantIndex>
@@ -141,28 +144,28 @@ function generate_cyclone_config() {
   </Discovery>
 </CycloneDDS>
 EOF
-    sudo chown $SUDO_USER.$SUDO_USER /home/$SUDO_USER/cyclone_config.xml
+    sudo chown $SUDO_USER.$SUDO_USER /home/$SUDO_USER/config/cyclone_config.xml
     return 0
 }
 
 function update_local_account() {
     cat >> /home/$SUDO_USER/.bashrc <<'EOF'
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 export MY_WORKSPACE=/home/$(whoami)/ros2_ws
 if [ -f $MY_WORKSPACE/install/setup.bash ]; then
     source $MY_WORKSPACE/install/setup.bash
 fi
 export ROS_DOMAIN_ID=0
-export ROS_LOCALHOST_ONLY=1
+export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 alias go_colcon='cd $MY_WORKSPACE'
 alias cc_build='cd $MY_WORKSPACE; colcon build --symlink-install --packages-select prob_rob_labs; cd -'
 alias cc_prebuild='cd $MY_WORKSPACE; colcon build --packages-skip prob_rob_labs; cd -'
-export _colcon_cd_root=/opt/ros/humble
+export _colcon_cd_root=/opt/ros/jazzy
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 #export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export TURTLEBOT3_MODEL=waffle_pi
 export GIT_EDITOR=vim
-export CYCLONEDDS_URI=/home/$(whoami)/cyclone_config.xml
+export CYCLONEDDS_URI=/home/$(whoami)/config/cyclone_config.xml
 EOF
 }
 
