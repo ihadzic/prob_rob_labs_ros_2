@@ -1,5 +1,5 @@
 #include "video_processor.hpp"
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace std::chrono_literals;
