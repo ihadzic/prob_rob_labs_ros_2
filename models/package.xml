@@ -10,19 +10,6 @@
   <!-- Build system -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- Dependencies -->
-  <build_depend>gazebo_dev</build_depend>
-  <build_depend>rclcpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>gazebo_msgs</build_depend>
-
-  <exec_depend>gazebo_dev</exec_depend>
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>gazebo_msgs</exec_depend>
-
   <export>
     <build_type>ament_cmake</build_type>
     <gazebo_ros gazebo_model_path="${prefix}/models"/>
