@@ -137,10 +137,12 @@ function generate_cyclone_config() {
     mkdir -p /home/$SUDO_USER/config
     cat >> /home/$SUDO_USER/config/cyclone_config.xml <<'EOF'
 <CycloneDDS>
-  <Discovery>
-    <ParticipantIndex>auto</ParticipantIndex>
-    <MaxAutoParticipantIndex>128</MaxAutoParticipantIndex>
-  </Discovery>
+  <Domain>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>128</MaxAutoParticipantIndex>
+    </Discovery>
+  </Domain>
 </CycloneDDS>
 EOF
     sudo chown $SUDO_USER.$SUDO_USER /home/$SUDO_USER/config/cyclone_config.xml
