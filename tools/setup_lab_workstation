@@ -136,7 +136,6 @@ function install_packages() {
 function generate_cyclone_config() {
     mkdir -p /home/$SUDO_USER/config
     cat >> /home/$SUDO_USER/config/cyclone_config.xml <<'EOF'
-    cat >> /home/$SUDO_USER/cyclone_config.xml <<'EOF'
 <CycloneDDS>
   <Discovery>
     <ParticipantIndex>auto</ParticipantIndex>
