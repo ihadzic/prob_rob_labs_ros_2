@@ -151,7 +151,7 @@ EOF
 function update_local_account() {
     cat >> /home/$SUDO_USER/.bashrc <<'EOF'
 DISTROBOX_HOSTNAME=$(hostname)
-if [ "$DISTROBOX_HOSTNAME" = "humble-e6911" ]; then
+if [ "$DISTROBOX_HOSTNAME" = "jazzy-e6911" ]; then
     source /opt/ros/jazzy/setup.bash
     export MY_WORKSPACE=/run/host/workdir/$(whoami)/ros2_ws
     if [ -f $MY_WORKSPACE/install/setup.bash ]; then
