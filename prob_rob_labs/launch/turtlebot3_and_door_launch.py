@@ -29,6 +29,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
 from launch.actions import DeclareLaunchArgument
+from launch.actions import AppendEnvironmentVariable
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 from launch.conditions import IfCondition
@@ -36,7 +37,7 @@ from launch.conditions import IfCondition
 def generate_launch_description():
     tb3_launch_dir = os.path.join(get_package_share_directory(
         'turtlebot3_gazebo'), 'launch')
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     x_pose = LaunchConfiguration('x_pose', default='-1.5')
@@ -74,16 +75,23 @@ def generate_launch_description():
 
     gzserver_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
+            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={'world': world_path}.items()
+        launch_arguments={
+            'gz_args': ['-r -s -v4 ', world_path], 'on_exit_shutdown': 'true'}.items()
     )
 
     gzclient_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')
-        )
+            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
+        ),
+        launch_arguments={'gz_args': '-g -v4 '}.items()
     )
+
+    set_env_vars_resources = AppendEnvironmentVariable(
+        'GZ_SIM_RESOURCE_PATH',
+        os.path.join(get_package_share_directory('turtlebot3_gazebo'),
+                     'models'))
 
     robot_state_publisher_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -125,6 +133,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    ld.add_action(set_env_vars_resources)
     ld.add_action(declare_world_arg)
     ld.add_action(declare_run_door_opener_arg)
     ld.add_action(declare_run_vision_processor_arg)

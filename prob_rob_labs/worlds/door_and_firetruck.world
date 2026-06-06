@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version='1.7'>
   <world name='default'>
-    <plugin name="link_state_publisher" filename="liblink_state_publisher.so"/>
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
       <pose>0 0 10 0 -0 0</pose>
@@ -20,6 +19,11 @@
         <falloff>0</falloff>
       </spot>
     </light>
+    <include>
+      <uri>
+	https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane
+      </uri>
+    </include>
     <include>
       <uri>model://blue_ground_plane</uri>
     </include>
