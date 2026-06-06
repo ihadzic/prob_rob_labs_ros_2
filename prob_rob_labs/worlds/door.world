@@ -20,9 +20,7 @@
       </spot>
     </light>
     <include>
-      <uri>
-	https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane
-      </uri>
+      <uri>model://blue_ground_plane</uri>
     </include>
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
