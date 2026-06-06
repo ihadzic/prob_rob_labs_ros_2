@@ -12,8 +12,8 @@ newmtl Firetruck_Body
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka fire_truck.png
-	map_Kd fire_truck.png
+	map_Ka model://fire_truck/materials/textures/fire_truck.png
+	map_Kd model://fire_truck/materials/textures/fire_truck.png
 
 newmtl Firetruck_Axle
 	Ns 10.0000
@@ -26,8 +26,8 @@ newmtl Firetruck_Axle
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka model://suv/materials/textures/suv.png
-	map_Kd model://suv/materials/textures/suv.png
+	map_Ka model://fire_truck/materials/textures/suv.png
+	map_Kd model://fire_truck/materials/textures/suv.png
 
 newmtl Firetruck_Wheels
 	Ns 10.0000
@@ -40,5 +40,5 @@ newmtl Firetruck_Wheels
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka model://suv/materials/textures/wheels_01.png
-	map_Kd model://suv/materials/textures/wheels_01.png
+	map_Ka model://fire_truck/materials/textures/wheels_01.png
+	map_Kd model://fire_truck/materials/textures/wheels_01.png
