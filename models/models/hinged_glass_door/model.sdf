@@ -120,7 +120,7 @@
         <limit>
           <lower>0</lower>
           <upper>1.58</upper>
-          <effort>1.5</effort>
+          <effort>5.0</effort>
         </limit>
         <dynamics>
           <damping>1.0</damping>
