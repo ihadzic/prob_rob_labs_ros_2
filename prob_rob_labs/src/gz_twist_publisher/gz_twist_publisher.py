@@ -1,18 +1,25 @@
 import rclpy
 from rclpy.node import Node
-
-
-heartbeat_period = 0.1
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 
 class GzTwistPublisher(Node):
 
     def __init__(self):
         super().__init__('gz_twist_publisher')
         self.log = self.get_logger()
-        self.timer = self.create_timer(heartbeat_period, self.heartbeat)
+        self.sub_odom = self.create_subscription(
+            Odometry, '/odom', self.handle_odom, 1
+        )
+        self.pub_twist = self.create_publisher(
+            TwistStamped, '/tb3/ground_truth/twist', 1)
 
-    def heartbeat(self):
-        self.log.info('heartbeat')
+    def handle_odom(self, odom):
+        twist = TwistStamped()
+        twist.header = odom.header
+        twist.header.frame_id = odom.child_frame_id
+        twist.twist = odom.twist.twist
+        self.pub_twist.publish(twist) 
 
     def spin(self):
         rclpy.spin(self)
