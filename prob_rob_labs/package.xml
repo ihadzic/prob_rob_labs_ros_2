@@ -17,6 +17,7 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>ros2launch</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>prob_rob_msgs</exec_depend>
   <exec_depend>prob_rob_vision</exec_depend>
 

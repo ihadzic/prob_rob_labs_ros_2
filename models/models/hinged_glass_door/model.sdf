@@ -170,7 +170,10 @@
         </ode>
       </physics>
     </joint>
-    <plugin name="hinge_control_plugin" filename="libhinge_control.so">
+    <plugin
+      filename="gz-sim-apply-joint-force-system"
+      name="gz::sim::systems::ApplyJointForce">
+      <joint_name>hinge</joint_name>
     </plugin>
   </model>
 </sdf>

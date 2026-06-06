@@ -31,6 +31,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
 from launch.actions import AppendEnvironmentVariable
 from launch.substitutions import PathJoinSubstitution
+from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.conditions import IfCondition
 
@@ -110,6 +111,16 @@ def generate_launch_description():
         }.items()
     )
 
+    door_torque_bridge_cmd = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/model/hinged_glass_door/joint/hinge/cmd_force@std_msgs/msg/Float64]gz.msgs.Double'],
+        remappings=[
+            ('/model/hinged_glass_door/joint/hinge/cmd_force', '/hinged_glass_door/torque')
+        ],
+        output='screen'
+    )
+
     flaky_door_opener_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('prob_rob_labs'), 'launch', 'flaky_door_opener_launch.py')
@@ -141,6 +152,7 @@ def generate_launch_description():
     ld.add_action(gzclient_cmd)
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(spawn_turtlebot_cmd)
+    ld.add_action(door_torque_bridge_cmd)
     ld.add_action(flaky_door_opener_cmd)
     ld.add_action(video_processor_cmd)
     ld.add_action(image_mean_feature_x_cmd)
