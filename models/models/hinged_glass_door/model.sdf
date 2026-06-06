@@ -107,27 +107,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name="handle" type="revolute">
+    <joint name="handle" type="fixed">
       <parent>door</parent>
       <child>handles</child>
       <pose>0.015 0 0 0 0 0</pose>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <limit>
-          <lower>0</lower>
-          <upper>1.58</upper>
-        </limit>
-        <dynamics>
-          <damping>0.1</damping>
-          <spring_stiffness>0.3</spring_stiffness>
-        </dynamics>
-        <use_parent_model_frame>true</use_parent_model_frame>
-      </axis>
-      <physics>
-        <ode>
-          <cfm_damping>1</cfm_damping>
-        </ode>
-      </physics>
     </joint>
     <joint name="hinge" type="revolute">
       <parent>frame</parent>
@@ -137,6 +120,7 @@
         <limit>
           <lower>0</lower>
           <upper>1.58</upper>
+          <effort>1.5</effort>
         </limit>
         <dynamics>
           <damping>1.0</damping>
@@ -150,25 +134,9 @@
         </ode>
       </physics>
     </joint>
-    <joint name="world_joint" type="revolute">
+    <joint name="world_joint" type="fixed">
       <child>frame</child>
       <parent>world</parent>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <xyz>0 1 0</xyz>
-        <dynamics>
-          <damping>1.0</damping>
-        </dynamics>
-        <use_parent_model_frame>true</use_parent_model_frame>
-      </axis>
-      <physics>
-        <ode>
-          <cfm_damping>1</cfm_damping>
-        </ode>
-      </physics>
     </joint>
     <plugin
       filename="gz-sim-apply-joint-force-system"
