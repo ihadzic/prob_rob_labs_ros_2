@@ -26,81 +26,20 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
-
-from launch.actions import DeclareLaunchArgument
-from launch.actions import AppendEnvironmentVariable
-from launch.substitutions import PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
-from launch.conditions import IfCondition
 
 def generate_launch_description():
-    tb3_launch_dir = os.path.join(get_package_share_directory(
-        'turtlebot3_gazebo'), 'launch')
-    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
-
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    x_pose = LaunchConfiguration('x_pose', default='0.0')
-    y_pose = LaunchConfiguration('y_pose', default='0.0')
-
-    world = LaunchConfiguration('world', default='empty.world')
-
-    world_path = PathJoinSubstitution([
-        FindPackageShare('prob_rob_labs'),
-        'worlds',
-        world
-    ])
-
-    declare_world_arg = DeclareLaunchArgument(
-        'world',
-        default_value='empty.world',
-        description='Name of the world file (located in prob_rob_labs/worlds/)'
-    )
-
-    gzserver_cmd = IncludeLaunchDescription(
+    turtlebot3_world_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
+            os.path.join(get_package_share_directory('prob_rob_labs'),
+                         'launch', 'turtlebot3_world_launch.py')
         ),
         launch_arguments={
-            'gz_args': ['-r -s -v4 ', world_path], 'on_exit_shutdown': 'true'}.items()
-    )
-
-    gzclient_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
-        ),
-        launch_arguments={'gz_args': '-g -v4 '}.items()
-    )
-
-    set_env_vars_resources = AppendEnvironmentVariable(
-        'GZ_SIM_RESOURCE_PATH',
-        os.path.join(get_package_share_directory('turtlebot3_gazebo'),
-                     'models'))
-
-    robot_state_publisher_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(tb3_launch_dir, 'robot_state_publisher.launch.py')
-        ),
-        launch_arguments={'use_sim_time': use_sim_time}.items()
-    )
-
-    spawn_turtlebot_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(tb3_launch_dir, 'spawn_turtlebot3.launch.py')
-        ),
-        launch_arguments={
-            'x_pose': x_pose,
-            'y_pose': y_pose
+            'world': 'empty.world',
+            'x_pose': '0.0',
+            'y_pose': '0.0'
         }.items()
     )
 
-    ld = LaunchDescription()
-
-    ld.add_action(set_env_vars_resources)
-    ld.add_action(declare_world_arg)
-    ld.add_action(gzserver_cmd)
-    ld.add_action(gzclient_cmd)
-    ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(spawn_turtlebot_cmd)
-
-    return ld
+    return LaunchDescription([
+        turtlebot3_world_launch
+    ])
