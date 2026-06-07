@@ -31,6 +31,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
 from launch.actions import AppendEnvironmentVariable
 from launch.substitutions import PathJoinSubstitution
+from launch_ros.actions import SetParameter
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -54,6 +55,12 @@ def generate_launch_description():
         'world',
         default_value='empty.world',
         description='Name of the world file (located in prob_rob_labs/worlds/)'
+    )
+
+    declare_use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation (Gazebo) clock if true'
     )
 
     gzserver_cmd = IncludeLaunchDescription(
@@ -88,7 +95,6 @@ def generate_launch_description():
             os.path.join(tb3_launch_dir, 'spawn_turtlebot3.launch.py')
         ),
         launch_arguments={
-            'use_sim_time': use_sim_time,
             'x_pose': x_pose,
             'y_pose': y_pose
         }.items()
@@ -114,6 +120,8 @@ def generate_launch_description():
 
     ld.add_action(set_env_vars_resources)
     ld.add_action(declare_world_arg)
+    ld.add_action(declare_use_sim_time_arg)
+    ld.add_action(SetParameter(name='use_sim_time', value=use_sim_time))
     ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)
     ld.add_action(robot_state_publisher_cmd)
