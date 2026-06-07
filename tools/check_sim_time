@@ -1,0 +1,5 @@
+#!/bin/bash
+for node in $(ros2 node list); do
+    result=$(ros2 param get $node use_sim_time 2>/dev/null | awk '{print $NF}')
+    echo "$node : $result"
+done
