@@ -74,6 +74,7 @@ def generate_launch_description():
     door_torque_bridge_cmd = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
+        name='door_torque_bridge',
         arguments=['/model/hinged_glass_door/joint/hinge/cmd_force@std_msgs/msg/Float64]gz.msgs.Double'],
         remappings=[
             ('/model/hinged_glass_door/joint/hinge/cmd_force', '/hinged_glass_door/torque')
