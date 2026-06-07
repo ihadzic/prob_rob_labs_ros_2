@@ -33,6 +33,7 @@ from launch_ros.actions import Node
 from launch.conditions import IfCondition
 
 def generate_launch_description():
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     world = LaunchConfiguration('world', default='door.world')
     x_pose = LaunchConfiguration('x_pose', default='-1.5')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
@@ -40,6 +41,12 @@ def generate_launch_description():
     run_door_opener = LaunchConfiguration('run_door_opener', default='false')
 
     run_vision_processor = LaunchConfiguration('run_vision_processor', default='false')
+
+    declare_use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Set to true for simulation',
+    )
 
     declare_world_arg = DeclareLaunchArgument(
         'world',
@@ -79,7 +86,10 @@ def generate_launch_description():
         remappings=[
             ('/model/hinged_glass_door/joint/hinge/cmd_force', '/hinged_glass_door/torque')
         ],
-        output='screen'
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time
+        }]
     )
 
     flaky_door_opener_cmd = IncludeLaunchDescription(
@@ -105,6 +115,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    ld.add_action(declare_use_sim_time_arg)
     ld.add_action(declare_world_arg)
     ld.add_action(declare_run_door_opener_arg)
     ld.add_action(declare_run_vision_processor_arg)

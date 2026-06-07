@@ -88,6 +88,7 @@ def generate_launch_description():
             os.path.join(tb3_launch_dir, 'spawn_turtlebot3.launch.py')
         ),
         launch_arguments={
+            'use_sim_time': use_sim_time,
             'x_pose': x_pose,
             'y_pose': y_pose
         }.items()
@@ -97,14 +98,16 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('prob_rob_labs'),
                          'launch', 'gz_pose_publisher_launch.py')
-        )
+        ),
+        launch_arguments={'use_sim_time': use_sim_time}.items()
     )
 
     gz_twist_publisher_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('prob_rob_labs'),
                          'launch', 'gz_twist_publisher_launch.py')
-        )
+        ),
+        launch_arguments={'use_sim_time': use_sim_time}.items()
     )
 
     ld = LaunchDescription()
