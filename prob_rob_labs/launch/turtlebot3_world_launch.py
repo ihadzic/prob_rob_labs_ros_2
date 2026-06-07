@@ -93,6 +93,20 @@ def generate_launch_description():
         }.items()
     )
 
+    gz_pose_publisher_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('prob_rob_labs'),
+                         'launch', 'gz_pose_publisher_launch.py')
+        )
+    )
+
+    gz_twist_publisher_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('prob_rob_labs'),
+                         'launch', 'gz_twist_publisher_launch.py')
+        )
+    )
+
     ld = LaunchDescription()
 
     ld.add_action(set_env_vars_resources)
@@ -101,5 +115,7 @@ def generate_launch_description():
     ld.add_action(gzclient_cmd)
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(spawn_turtlebot_cmd)
+    ld.add_action(gz_pose_publisher_cmd)
+    ld.add_action(gz_twist_publisher_cmd)
 
     return ld
