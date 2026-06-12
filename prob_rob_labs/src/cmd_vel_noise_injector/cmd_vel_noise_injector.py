@@ -3,7 +3,8 @@ import random
 import rclpy
 from geometry_msgs.msg import TwistStamped
 from rclpy.node import Node
-
+from rclpy.duration import Duration
+from rclpy.time import Time
 
 class CmdVelNoiseInjector(Node):
     def __init__(self):
@@ -14,6 +15,7 @@ class CmdVelNoiseInjector(Node):
         self.declare_parameter('publish_rate_hz', 30.0)
         self.declare_parameter('actuation_noise_linear_std', 0.006)
         self.declare_parameter('actuation_noise_angular_std', 0.006)
+        self.declare_parameter('timeout', 1.0)
 
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value
         output_topic = self.get_parameter('output_topic').get_parameter_value().string_value
@@ -23,7 +25,9 @@ class CmdVelNoiseInjector(Node):
         self.act_ang_std = self.get_parameter('actuation_noise_angular_std').get_parameter_value().double_value
 
         self.latest_cmd = TwistStamped()
-        self.latest_cmd.header.frame_id = 'base_footprint'
+
+        timeout_s = self.get_parameter('timeout').get_parameter_value().double_value
+        self.timeout = Duration(seconds=timeout_s)
 
         self.sub = self.create_subscription(
             TwistStamped,
@@ -34,25 +38,35 @@ class CmdVelNoiseInjector(Node):
         self.pub = self.create_publisher(TwistStamped, output_topic, 10)
 
         period_s = 1.0 / max(publish_rate_hz, 1.0)
-        self.timer = self.create_timer(period_s, self.publish_noisy_cmd)
+        self.timer = self.create_timer(period_s, self.heartbeat)
+
+    def heartbeat(self) -> None:
+        now = self.get_clock().now()
+        if now - Time.from_msg(self.latest_cmd.header.stamp) > self.timeout:
+            # if input cmd_vel times out stop the robot
+            msg = TwistStamped()
+            msg.header.frame_id = self.latest_cmd.header.frame_id or 'base_footprint'
+            msg.header.stamp = now.to_msg()
+            self.publish_noisy_cmd(msg)
 
     def handle_cmd(self, msg: TwistStamped) -> None:
+        # as long as input cmd_vel is coming, just repoublish with noise
         self.latest_cmd = msg
+        self.publish_noisy_cmd(msg)
 
-    def publish_noisy_cmd(self) -> None:
+    def publish_noisy_cmd(self, msg: TwistStamped) -> None:
         cmd = TwistStamped()
-        cmd.header.stamp = self.get_clock().now().to_msg()
-        cmd.header.frame_id = self.latest_cmd.header.frame_id or 'base_footprint'
+        cmd.header = msg.header
 
-        v = self.latest_cmd.twist.linear.x
-        w = self.latest_cmd.twist.angular.z
+        v = msg.twist.linear.x
+        w = msg.twist.angular.z
 
         cmd.twist.linear.x = v + random.gauss(0.0, self.act_lin_std)
-        cmd.twist.linear.y = self.latest_cmd.twist.linear.y
-        cmd.twist.linear.z = self.latest_cmd.twist.linear.z
+        cmd.twist.linear.y = msg.twist.linear.y
+        cmd.twist.linear.z = msg.twist.linear.z
 
-        cmd.twist.angular.x = self.latest_cmd.twist.angular.x
-        cmd.twist.angular.y = self.latest_cmd.twist.angular.y
+        cmd.twist.angular.x = msg.twist.angular.x
+        cmd.twist.angular.y = msg.twist.angular.y
         cmd.twist.angular.z = w + random.gauss(0.0, self.act_ang_std)
 
         self.pub.publish(cmd)
