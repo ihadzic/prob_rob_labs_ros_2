@@ -38,12 +38,17 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     tb3_launch_dir = os.path.join(get_package_share_directory(
         'turtlebot3_gazebo'), 'launch')
+    prob_rob_labs_dir = get_package_share_directory('prob_rob_labs')
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     x_pose = LaunchConfiguration('x_pose', default='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
     world = LaunchConfiguration('world', default='empty.world')
+    use_noisy_dynamics = LaunchConfiguration('use_noisy_dynamics', default='true')
+    use_actuation_noise = LaunchConfiguration('use_actuation_noise', default='true')
+    sensor_noise_scale = LaunchConfiguration('sensor_noise_scale', default='2.0')
+    wheel_slip = LaunchConfiguration('wheel_slip', default='0.06')
 
     world_path = PathJoinSubstitution([
         FindPackageShare('prob_rob_labs'),
@@ -61,6 +66,30 @@ def generate_launch_description():
         'use_sim_time',
         default_value='true',
         description='Use simulation (Gazebo) clock if true'
+    )
+
+    declare_use_noisy_dynamics_arg = DeclareLaunchArgument(
+        'use_noisy_dynamics',
+        default_value='true',
+        description='Enable stronger sensor noise and wheel slip'
+    )
+
+    declare_use_actuation_noise_arg = DeclareLaunchArgument(
+        'use_actuation_noise',
+        default_value='true',
+        description='Inject cmd_vel noise and idle jitter'
+    )
+
+    declare_sensor_noise_scale_arg = DeclareLaunchArgument(
+        'sensor_noise_scale',
+        default_value='2.0',
+        description='Multiplier for built-in sensor noise values'
+    )
+
+    declare_wheel_slip_arg = DeclareLaunchArgument(
+        'wheel_slip',
+        default_value='0.06',
+        description='Slip compliance used by the Gazebo wheel-slip system'
     )
 
     gzserver_cmd = IncludeLaunchDescription(
@@ -92,11 +121,15 @@ def generate_launch_description():
 
     spawn_turtlebot_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(tb3_launch_dir, 'spawn_turtlebot3.launch.py')
+            os.path.join(prob_rob_labs_dir, 'launch', 'spawn_turtlebot3_noisy_launch.py')
         ),
         launch_arguments={
             'x_pose': x_pose,
-            'y_pose': y_pose
+            'y_pose': y_pose,
+            'use_noisy_dynamics': use_noisy_dynamics,
+            'use_actuation_noise': use_actuation_noise,
+            'sensor_noise_scale': sensor_noise_scale,
+            'wheel_slip': wheel_slip,
         }.items()
     )
 
@@ -121,6 +154,10 @@ def generate_launch_description():
     ld.add_action(set_env_vars_resources)
     ld.add_action(declare_world_arg)
     ld.add_action(declare_use_sim_time_arg)
+    ld.add_action(declare_use_noisy_dynamics_arg)
+    ld.add_action(declare_use_actuation_noise_arg)
+    ld.add_action(declare_sensor_noise_scale_arg)
+    ld.add_action(declare_wheel_slip_arg)
     ld.add_action(SetParameter(name='use_sim_time', value=use_sim_time))
     ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)

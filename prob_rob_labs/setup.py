@@ -37,6 +37,7 @@ setup(
             'image_mean_feature_x = image_mean_feature_x.image_mean_feature_x:main',
             'flaky_door_opener = flaky_door_opener.flaky_door_opener:main',
             'gz_pose_publisher = gz_pose_publisher.gz_pose_publisher:main',
+            'cmd_vel_noise_injector = cmd_vel_noise_injector.cmd_vel_noise_injector:main',
         ],
     }
 )
