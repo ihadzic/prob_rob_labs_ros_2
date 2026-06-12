@@ -13,11 +13,7 @@ class CmdVelNoiseInjector(Node):
         self.declare_parameter('output_topic', '/cmd_vel_noisy')
         self.declare_parameter('publish_rate_hz', 30.0)
         self.declare_parameter('actuation_noise_linear_std', 0.006)
-        self.declare_parameter('actuation_noise_angular_std', 0.03)
-        self.declare_parameter('idle_jitter_linear_std', 0.012)
-        self.declare_parameter('idle_jitter_angular_std', 0.08)
-        self.declare_parameter('idle_deadband_linear', 0.02)
-        self.declare_parameter('idle_deadband_angular', 0.04)
+        self.declare_parameter('actuation_noise_angular_std', 0.006)
 
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value
         output_topic = self.get_parameter('output_topic').get_parameter_value().string_value
@@ -25,10 +21,6 @@ class CmdVelNoiseInjector(Node):
 
         self.act_lin_std = self.get_parameter('actuation_noise_linear_std').get_parameter_value().double_value
         self.act_ang_std = self.get_parameter('actuation_noise_angular_std').get_parameter_value().double_value
-        self.idle_lin_std = self.get_parameter('idle_jitter_linear_std').get_parameter_value().double_value
-        self.idle_ang_std = self.get_parameter('idle_jitter_angular_std').get_parameter_value().double_value
-        self.idle_deadband_lin = self.get_parameter('idle_deadband_linear').get_parameter_value().double_value
-        self.idle_deadband_ang = self.get_parameter('idle_deadband_angular').get_parameter_value().double_value
 
         self.latest_cmd = TwistStamped()
         self.latest_cmd.header.frame_id = 'base_footprint'
@@ -44,10 +36,6 @@ class CmdVelNoiseInjector(Node):
         period_s = 1.0 / max(publish_rate_hz, 1.0)
         self.timer = self.create_timer(period_s, self.publish_noisy_cmd)
 
-        self.get_logger().info(
-            f'Injecting cmd_vel noise from {input_topic} to {output_topic} at {publish_rate_hz:.1f} Hz'
-        )
-
     def handle_cmd(self, msg: TwistStamped) -> None:
         self.latest_cmd = msg
 
@@ -59,18 +47,13 @@ class CmdVelNoiseInjector(Node):
         v = self.latest_cmd.twist.linear.x
         w = self.latest_cmd.twist.angular.z
 
-        is_idle = abs(v) < self.idle_deadband_lin and abs(w) < self.idle_deadband_ang
-
-        lin_std = self.idle_lin_std if is_idle else self.act_lin_std
-        ang_std = self.idle_ang_std if is_idle else self.act_ang_std
-
-        cmd.twist.linear.x = v + random.gauss(0.0, lin_std)
+        cmd.twist.linear.x = v + random.gauss(0.0, self.act_lin_std)
         cmd.twist.linear.y = self.latest_cmd.twist.linear.y
         cmd.twist.linear.z = self.latest_cmd.twist.linear.z
 
         cmd.twist.angular.x = self.latest_cmd.twist.angular.x
         cmd.twist.angular.y = self.latest_cmd.twist.angular.y
-        cmd.twist.angular.z = w + random.gauss(0.0, ang_std)
+        cmd.twist.angular.z = w + random.gauss(0.0, self.act_ang_std)
 
         self.pub.publish(cmd)
 
