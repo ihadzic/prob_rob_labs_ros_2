@@ -25,6 +25,7 @@ class CmdVelNoiseInjector(Node):
         self.act_ang_std = self.get_parameter('actuation_noise_angular_std').get_parameter_value().double_value
 
         self.latest_cmd = TwistStamped()
+        self.latest_cmd_time = None
 
         timeout_s = self.get_parameter('timeout').get_parameter_value().double_value
         self.timeout = Duration(seconds=timeout_s)
@@ -42,7 +43,8 @@ class CmdVelNoiseInjector(Node):
 
     def heartbeat(self) -> None:
         now = self.get_clock().now()
-        if now - Time.from_msg(self.latest_cmd.header.stamp) > self.timeout:
+        if self.latest_cmd_time is not None and \
+           now - self.latest_cmd_time > self.timeout:
             # if input cmd_vel times out stop the robot
             msg = TwistStamped()
             msg.header.frame_id = self.latest_cmd.header.frame_id or 'base_footprint'
@@ -52,6 +54,7 @@ class CmdVelNoiseInjector(Node):
     def handle_cmd(self, msg: TwistStamped) -> None:
         # as long as input cmd_vel is coming, just repoublish with noise
         self.latest_cmd = msg
+        self.latest_cmd_time = self.get_clock().now()
         self.publish_noisy_cmd(msg)
 
     def publish_noisy_cmd(self, msg: TwistStamped) -> None:
