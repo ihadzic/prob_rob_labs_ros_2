@@ -61,8 +61,8 @@ class CmdVelNoiseInjector(Node):
         cmd = TwistStamped()
         cmd.header = msg.header
 
-        v = msg.twist.linear.x
-        w = msg.twist.angular.z
+        v = min(msg.twist.linear.x, 0.5)
+        w = min(msg.twist.angular.z, 3.0)
 
         cmd.twist.linear.x = v + random.gauss(0.0, self.act_lin_std)
         cmd.twist.linear.y = msg.twist.linear.y
