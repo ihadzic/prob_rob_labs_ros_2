@@ -41,6 +41,7 @@ def generate_launch_description():
     run_door_opener = LaunchConfiguration('run_door_opener', default='false')
 
     run_vision_processor = LaunchConfiguration('run_vision_processor', default='false')
+    max_vision_features = LaunchConfiguration('max_vision_features', default='50')
 
     declare_use_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
@@ -64,6 +65,12 @@ def generate_launch_description():
         'run_vision_processor',
         default_value='false',
         description='Whether to run the vision processing nodes'
+    )
+
+    declare_max_vision_features_arg = DeclareLaunchArgument(
+        'max_vision_features',
+        default_value='50',
+        description='Maximum number of features for the vision processor'
     )
 
     turtlebot3_world_launch_cmd = IncludeLaunchDescription(
@@ -103,6 +110,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('prob_rob_vision'), 'launch', 'video_processor_launch.py')
         ),
+        launch_arguments={
+            'max_features': max_vision_features
+        }.items(),
         condition=IfCondition(run_vision_processor)
     )
 
@@ -119,6 +129,7 @@ def generate_launch_description():
     ld.add_action(declare_world_arg)
     ld.add_action(declare_run_door_opener_arg)
     ld.add_action(declare_run_vision_processor_arg)
+    ld.add_action(declare_max_vision_features_arg)
     ld.add_action(turtlebot3_world_launch_cmd)
     ld.add_action(door_torque_bridge_cmd)
     ld.add_action(flaky_door_opener_cmd)
