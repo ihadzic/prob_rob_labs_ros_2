@@ -14,7 +14,7 @@ def generate_launch_description():
 
     run_vision_processor = LaunchConfiguration('run_vision_processor', default='false')
     run_door_opener = LaunchConfiguration('run_door_opener', default='false')
-    max_vision_features = LaunchConfiguration('max_vision_features', default='50')
+    max_vision_features = LaunchConfiguration('max_vision_features', default='200')
 
     declare_run_vision_processor_arg = DeclareLaunchArgument(
         'run_vision_processor',
@@ -30,7 +30,7 @@ def generate_launch_description():
 
     declare_max_vision_features_arg = DeclareLaunchArgument(
         'max_vision_features',
-        default_value='50',
+        default_value='200',
         description='Maximum number of features for the vision processor'
     )
 
