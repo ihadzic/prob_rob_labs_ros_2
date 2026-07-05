@@ -13,8 +13,8 @@ class CmdVelNoiseInjector(Node):
         self.declare_parameter('input_topic', '/cmd_vel')
         self.declare_parameter('output_topic', '/cmd_vel_noisy')
         self.declare_parameter('publish_rate_hz', 30.0)
-        self.declare_parameter('actuation_noise_linear_std', 0.006)
-        self.declare_parameter('actuation_noise_angular_std', 0.006)
+        self.declare_parameter('actuation_noise_linear_std', 0.0)
+        self.declare_parameter('actuation_noise_angular_std', 0.0)
         self.declare_parameter('timeout', 1.0)
 
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value

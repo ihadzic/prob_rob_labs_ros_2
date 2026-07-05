@@ -49,6 +49,7 @@ def generate_launch_description():
     use_actuation_noise = LaunchConfiguration('use_actuation_noise', default='true')
     sensor_noise_scale = LaunchConfiguration('sensor_noise_scale', default='2.0')
     wheel_slip = LaunchConfiguration('wheel_slip', default='0.06')
+    cmd_noise = LaunchConfiguration('cmd_noise', default='0.0')
 
     world_path = PathJoinSubstitution([
         FindPackageShare('prob_rob_labs'),
@@ -92,6 +93,12 @@ def generate_launch_description():
         description='Slip compliance used by the Gazebo wheel-slip system'
     )
 
+    declare_cmd_noise_arg = DeclareLaunchArgument(
+        'cmd_noise',
+        default_value='0.0',
+        description='Velocity command noise'
+    )
+
     gzserver_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
@@ -130,6 +137,7 @@ def generate_launch_description():
             'use_actuation_noise': use_actuation_noise,
             'sensor_noise_scale': sensor_noise_scale,
             'wheel_slip': wheel_slip,
+            'cmd_noise': cmd_noise
         }.items()
     )
 
@@ -158,6 +166,7 @@ def generate_launch_description():
     ld.add_action(declare_use_actuation_noise_arg)
     ld.add_action(declare_sensor_noise_scale_arg)
     ld.add_action(declare_wheel_slip_arg)
+    ld.add_action(declare_cmd_noise_arg)
     ld.add_action(SetParameter(name='use_sim_time', value=use_sim_time))
     ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)

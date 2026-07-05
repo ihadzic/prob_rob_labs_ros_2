@@ -174,6 +174,7 @@ def _launch_setup(context, *args, **kwargs):
     use_actuation_noise = LaunchConfiguration('use_actuation_noise').perform(context).lower() == 'true'
     sensor_noise_scale = float(LaunchConfiguration('sensor_noise_scale').perform(context))
     wheel_slip = float(LaunchConfiguration('wheel_slip').perform(context))
+    cmd_noise = float(LaunchConfiguration('cmd_noise').perform(context))
 
     model_sdf = os.path.join(
         get_package_share_directory('turtlebot3_gazebo'),
@@ -236,8 +237,8 @@ def _launch_setup(context, *args, **kwargs):
                     {'input_topic': '/cmd_vel'},
                     {'output_topic': '/cmd_vel_noisy'},
                     {'publish_rate_hz': 30.0},
-                    {'actuation_noise_linear_std': 0.006},
-                    {'actuation_noise_angular_std': 0.006},
+                    {'actuation_noise_linear_std': cmd_noise},
+                    {'actuation_noise_angular_std': cmd_noise},
                 ],
                 output='screen',
             )
@@ -269,6 +270,11 @@ def generate_launch_description():
             'wheel_slip',
             default_value='0.06',
             description='Wheel slip compliance for Gazebo wheel-slip system',
+        ),
+        DeclareLaunchArgument(
+            'cmd_noise',
+            default_value='0.0',
+            description='Velocity command noise',
         ),
         OpaqueFunction(function=_launch_setup),
     ])
