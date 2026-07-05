@@ -43,7 +43,7 @@ class CmdVelNoiseInjector(Node):
 
     def heartbeat(self) -> None:
         now = self.get_clock().now()
-        if self.latest_cmd_time is not None and \
+        if self.latest_cmd_time is None or \
            now - self.latest_cmd_time > self.timeout:
             # if input cmd_vel times out stop the robot
             msg = TwistStamped()
