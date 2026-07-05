@@ -36,7 +36,8 @@ def generate_launch_description():
         launch_arguments={
             'world': 'landmarks.world',
             'x_pose': '-1.5',
-            'y_pose': '0.0'
+            'y_pose': '0.0',
+            'cmd_noise': '0.005'
         }.items()
     )
 
