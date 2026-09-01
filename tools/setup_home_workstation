@@ -103,7 +103,6 @@ function install_ros_packages() {
         "image-view"
         "gz-ros2-control"
         "twist-stamper"
-        "kdiff3"
     )
     for package in "${packages[@]}"; do
         apt-mark showhold  | grep  "ros-$ROS_RELEASE-$package" > /dev/null
@@ -129,6 +128,7 @@ function install_packages() {
         "gitk"
         "gcc"
         "python-is-python3"
+        "kdiff3"
     )
     apt install -y ${packages[*]}
     return $?
