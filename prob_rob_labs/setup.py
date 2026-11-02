@@ -40,6 +40,7 @@ setup(
             'gz_pose_publisher = gz_pose_publisher.gz_pose_publisher:main',
             'cmd_vel_noise_injector = cmd_vel_noise_injector.cmd_vel_noise_injector:main',
             'step_response = lab4_odometry.step_response:main',
+            'ekf_odometry = lab4_odometry.EKF_odometry:main',
         ],
     }
 )
