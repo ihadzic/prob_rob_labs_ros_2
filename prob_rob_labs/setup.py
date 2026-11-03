@@ -42,6 +42,7 @@ setup(
             'step_response = lab4_odometry.step_response:main',
             'ekf_odometry = lab4_odometry.EKF_odometry:main',
             'odometry_error = lab4_odometry.odometry_error:main',
+            'covariance_analysis = lab4_odometry.covariance_analysis:main',
         ],
     }
 )
